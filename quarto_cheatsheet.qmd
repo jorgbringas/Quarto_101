@@ -1,0 +1,412 @@
+---
+title: "Quarto Cheatsheet"
+format: html
+---
+
+Based on materials from [RstatsTextbook](https://elenlefoll.github.io/RstatsTextbook/13_LiterateProgramming.html).
+
+
+::: {.callout-note}
+This guide is designed for complete beginners to Quarto and R. Each example includes detailed explanations of what the code does and why you'd use it.
+:::
+
+# Quarto Cheatsheet
+
+## Basic Setup
+
+### Loading Libraries
+## 🏁 Getting Started
+
+### Loading a Package
+```{r}
+#| label: setup
+#| include: false
+library(checkdown)
+```
+
+**What this does:**
+- `library(checkdown)` loads the checkdown package, which adds interactive quiz and exercise features to your document.
+- `#| label: setup` gives this chunk a name (like a bookmark) so you can reference it later.
+- `#| include: false` tells Quarto: "Run this code, but don't show the code or any output in the final document."
+
+**When to use this:**
+- At the beginning of your document to load any packages you'll need.
+- For setup code that doesn't need to be visible to readers.
+
+## Data Import and Basic Operations
+
+### Loading Data
+### Importing Data from CSV Files
+```{r}
+#| label: import-data
+#| include: false
+L1.data <- read.csv("data/L1_data.csv")
+L2.data <- read.csv("data/L2_data.csv")
+```
+
+**What this does:**
+- `read.csv()` reads data from a CSV file into R.
+- `L1.data` and `L2.data` are names we're giving to our data (like labeled boxes to store things in).
+- The file paths in quotes tell R where to find the data files.
+
+**Important notes:**
+- The file path is relative to your Quarto document's location.
+- Make sure your data files are in a `data` folder in the same folder as your Quarto document.
+- You can also use full file paths like `C:/Users/YourName/Documents/data.csv` (Windows) or `/Users/YourName/Documents/data.csv` (Mac).
+
+### Basic Data Exploration
+### Basic Data Exploration
+```{r}
+# Basic summary statistics
+summary(L1.data$Age)
+
+# Count observations by group
+table(L1.data$Gender)
+```
+
+**Understanding the code:**
+1. `summary(L1.data$Age)`
+   - `L1.data$Age` means "get the Age column from the L1.data dataset"
+   - `summary()` calculates basic statistics: minimum, 1st quartile, median, mean, 3rd quartile, and maximum
+   - Example output:
+     ```
+     Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+     17.0    25.0    35.0    38.0    50.0    65.0
+     ```
+
+2. `table(L1.data$Gender)`
+   - Counts how many of each category exist in the Gender column
+   - Example output:
+     ```
+       F   M   
+      48  42
+     ```
+     (This means there are 48 females and 42 males)
+
+**When to use:**
+- Use `summary()` to quickly understand the distribution of numerical data.
+- Use `table()` to count categories in categorical data (like gender, age groups, etc.).
+
+## Data Visualization
+
+### Basic Plot
+## 📊 Creating Basic Plots
+
+### Making a Scatter Plot
+```{r}
+#| label: fig-scatterplot
+#| fig-cap: "L2 participants' lexical proficiency in English and their professional occupational group"
+#| fig-height: 5
+#| fig-asp: 0.618
+#| message: false
+#| echo: fenced
+
+plot(L2.data$LexTALE, L2.data$GrammarR,
+     xlab = "Lexical Proficiency",
+     ylab = "Grammar Score",
+     pch = 16, col = "steelblue")
+```
+
+**Understanding the code:**
+- `plot(x, y)` creates a basic scatter plot where:
+  - `x` is the horizontal axis (LexTALE scores)
+  - `y` is the vertical axis (GrammarR scores)
+- `xlab` and `ylab` add labels to the axes
+- `pch = 16` makes solid circle points (try numbers 1-25 for different shapes)
+- `col = "steelblue"` sets the point color (you can use color names or hex codes like "#4682B4")
+
+**Chunk options explained:**
+- `label: fig-scatterplot` - Names this figure for cross-referencing
+- `fig-cap` - Adds a caption below the figure
+- `fig-height: 5` - Makes the plot 5 inches tall
+- `fig-asp: 0.618` - Sets the golden ratio for width-to-height
+- `message: false` - Hides any messages from R
+- `echo: fenced` - Shows the code in a simple format without syntax highlighting
+
+### Interactive Plot with plotly
+## 🔄 Creating Interactive Plots
+
+### Interactive Plot with plotly
+```{r}
+#| label: fig-scatterplot-plotly
+#| fig-cap: "An interactive plot of L2 participants' lexical proficiency in English"
+#| message: false
+#| warning: false
+#| code-fold: true
+#| code-summary: "Show R code to generate the interactive plot below."
+
+library(plotly)
+plot_ly(data = L2.data, 
+        x = ~LexTALE, 
+        y = ~GrammarR,
+        type = "scatter",
+        mode = "markers",
+        text = ~paste("Age: ", Age, "<br>Group: ", Group))
+```
+
+**What makes this special:**
+- Viewers can hover over points to see details
+- Zoom in/out of specific areas
+- Download the plot as an image
+- Pan around the plot
+
+**Code breakdown:**
+- `library(plotly)` - Loads the plotly package (install it first with `install.packages("plotly")` if needed)
+- `plot_ly()` - Creates an interactive plot
+  - `data = L2.data` - Uses the L2.data dataset
+  - `x` and `y` specify which columns to plot
+  - `type = "scatter"` makes a scatter plot
+  - `mode = "markers"` shows individual points
+  - `text` creates hover information (shows Age and Group when you hover over a point)
+
+**Chunk options explained:**
+- `code-fold: true` - Hides the code by default (readers can click to show it)
+- `code-summary` - Customizes the "Show code" button text
+
+**Try this:**
+1. Hover over points to see the Age and Group
+2. Click and drag to zoom into an area
+3. Double-click to reset the view
+
+## Tables
+
+### Basic Table with kable
+## 📋 Creating Tables
+
+### Making a Simple Table
+```{r}
+#| label: tbl-participants
+#| tbl-cap: "Participant Demographics"
+#| echo: fenced
+
+knitr::kable(
+  data.frame(
+    Group = c("L1", "L2"),
+    N = c(nrow(L1.data), nrow(L2.data)),
+    Mean_Age = c(mean(L1.data$Age), mean(L2.data$Age))
+  ),
+  digits = 1
+)
+```
+
+**What this does:**
+Creates a table that looks like this:
+
+| Group |  N | Mean_Age |
+|-------|----|----------|
+| L1    | 90 |     38.2 |
+| L2    | 67 |     35.8 |
+
+**Code breakdown:**
+1. `data.frame()` creates a table with three columns:
+   - `Group`: Contains "L1" and "L2"
+   - `N`: Counts rows in each dataset with `nrow()`
+   - `Mean_Age`: Calculates average age for each group
+
+2. `knitr::kable()` formats the table nicely
+   - `digits = 1` rounds numbers to 1 decimal place
+
+**Chunk options explained:**
+- `label: tbl-participants` - Names the table for referencing
+- `tbl-cap` - Adds a caption above the table
+- `echo: fenced` - Shows the code in a simple format
+
+**Tip:** Add `format = "html"` inside `kable()` for fancier HTML tables with features like sorting and searching.
+
+## Inline Code
+
+### Basic Inline Code
+## ✏️ Using Inline Code
+
+### Inserting Values into Text
+```markdown
+The mean age of L1 participants is `r mean(L1.data$Age) |> round(1)` years.
+```
+
+**What this does:**
+- When rendered, it will show something like: "The mean age of L1 participants is 38.2 years."
+- The actual number is calculated automatically from your data
+
+**How it works:**
+- Everything between `r` and `}` is R code that gets run
+- `mean(L1.data$Age)` calculates the average age
+- `|> round(1)` rounds the result to 1 decimal place (the pipe `|>` means "then do this"). This is the new base R pipe operator (introduced in R 4.1.0).
+
+**Why this is great:**
+- If your data changes, the numbers in your text update automatically
+- No more copy-paste errors in your report!
+
+---
+
+## References
+
+This guide was inspired by and adapted from:
+- [Literate Programming with R Markdown](https://elenlefoll.github.io/RstatsTextbook/13_LiterateProgramming.html)
+
+**Try this:**
+1. Change the `1` in `round(1)` to `0` or `2` and see what happens
+2. Try calculating and displaying other statistics in your text
+
+## Cross-Referencing
+
+### Referencing Figures/Tables
+## 🔗 Cross-Referencing
+
+### Referencing Figures and Tables
+```markdown
+As shown in Figure @fig-scatterplot, there is a positive correlation...
+
+See Table @tbl-participants for demographic information.
+```
+
+**What this does:**
+- Creates clickable links to your figures and tables
+- Automatically numbers everything for you
+- If you add/remove items, the numbers update automatically
+
+**How to use it:**
+1. Make sure your figure/table has a label (like `fig-scatterplot` or `tbl-participants`)
+2. Reference it in your text using `@label`
+   - For figures: `@fig-label`
+   - For tables: `@tbl-label`
+
+**Example output in your document:**
+"As shown in Figure 1, there is a positive correlation..."
+
+**Pro tip:** Use the Visual Editor in RStudio to insert these references using the @ menu - it's much easier!
+
+## Conditional Content
+
+### Showing/Hiding Content
+## 🎚️ Conditional Content
+
+### Showing/Hiding Content Based on Conditions
+```{r}
+#| echo: false
+#| eval: 1 == 1  # Change to FALSE to hide this content
+
+cat("This content will only appear if the condition is TRUE")
+```
+
+**What this does:**
+- The code inside will only run if the condition after `eval:` is TRUE
+- In this case, `1 == 1` is always TRUE, so the content will show
+- Change it to `FALSE` to hide the content
+
+**Practical examples:**
+1. Show different content in draft vs. final versions:
+   ```
+   #| eval: params$draft == TRUE
+   cat("DRAFT VERSION - Not for distribution")
+   ```
+
+2. Include extra details in an appendix:
+   ```
+   #| eval: params$include_appendix == TRUE
+   cat("Additional technical details...")
+   ```
+
+**How to use parameters:**
+Add this to your document's YAML header (at the very top):
+```yaml
+---
+params:
+  draft: true
+  include_appendix: false
+---
+```
+
+## Advanced Features
+
+### Parameterized Reports
+## 🎛️ Creating Dynamic Reports with Parameters
+
+### Setting Up Parameters
+Add this to the very top of your document (in the YAML header):
+```yaml
+---
+title: "My Report"
+params:
+  show_code: true    # Toggle code visibility
+  dataset: "L1"      # Choose which dataset to use
+  highlight: "blue"  # Set highlight color
+---
+```
+
+### Using Parameters in Your Code
+```{r}
+#| echo: params$show_code
+
+# Use different data based on parameter
+if(params$dataset == "L1") {
+  data <- L1.data
+  title <- "Native Speakers (L1)"
+} else {
+  data <- L2.data
+  title <- "Second Language Learners (L2)"
+}
+
+# Create a plot with the selected data
+plot(data$Age, main = title, col = params$highlight)
+```
+
+**How to use this:**
+1. Click "Render" with different parameter values to create different versions
+2. Or click the arrow next to "Render" and select "Render with Parameters" to choose values
+
+**Real-world uses:**
+- Create one report that works for different departments
+- Generate student-specific reports
+- Make quick comparisons between different datasets
+
+## 🏆 Best Practices for Beginners
+
+### 1. Organizing Your Document
+```markdown
+# Data Preparation
+(Chunks for importing and cleaning data)
+
+# Analysis
+(Chunks for statistical tests and calculations)
+
+# Visualizations
+(Chunks for creating plots and tables)
+```
+- **Why?** Makes your document easier to navigate and understand
+- **Tip:** Use Markdown headers to create clear sections
+
+### 2. Making Your Work Reproducible
+```{r}
+# At the beginning of your document
+set.seed(123)  # Makes random results consistent
+sessionInfo()  # Records package versions
+```
+- **Why?** So others (or future you) can get the same results
+- **Tip:** Include a "Session Info" section at the end
+
+### 3. Keeping Things Fast
+```{r}
+#| cache: true
+# Long-running calculation here
+result <- long_running_function()
+```
+- **Why?** Saves time by not re-running slow calculations
+- **Tip:** Give cached chunks meaningful names
+
+### 4. Making Your Code Readable
+```{r}
+# Good chunk label
+#| label: clean-survey-data
+
+# Bad chunk label
+#| label: chunk1
+```
+- **Why?** Helps you find things later
+- **Tip:** Use verbs in your chunk names (e.g., "import-data", "clean-names", "plot-results")
+
+### 5. Getting Help
+- Type `?function_name` in the R console for help
+- Use the "Help" tab in RStudio
+- Search online with "R" and what you're trying to do
+
+Remember: Everyone was a beginner once! Don't be afraid to make mistakes - they're how we learn. Happy coding! 🚀

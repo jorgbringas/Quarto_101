@@ -1,0 +1,129 @@
+---
+title: "Quarto Chunk Options Reference"
+format: html
+---
+
+Based on materials from [RstatsTextbook](https://elenlefoll.github.io/RstatsTextbook/13_LiterateProgramming.html).
+
+# Quarto Chunk Options Reference
+
+## Code Display Options
+
+### Code Execution
+- `eval: true/false`  
+  Controls whether the code in the chunk is executed. When `false`, the code is shown but not run.
+
+- `echo: true/false/"fenced"`  
+  Controls code visibility:  
+  - `true`: Shows code with syntax highlighting (default)  
+  - `false`: Hides the code completely  
+  - `"fenced"`: Shows code in plain text without syntax highlighting, useful for documentation
+
+- `include: true/false`  
+  Determines if the chunk's output is included in the final document. When `false`, the code still runs but output is suppressed.
+
+### Message Control
+- `message: true/false`  
+  Controls display of messages (e.g., package loading messages)
+
+- `warning: true/false`  
+  Controls display of warnings
+
+- `error: true/false`  
+  Controls whether to show errors or stop execution
+
+## Figure Options
+
+### Basic Figure Settings
+- `fig-cap: "caption text"`  
+  Adds a caption to the figure
+
+- `fig-cap-location: top/bottom`  
+  Positions the figure caption at the top or bottom
+
+- `fig-height: number`  
+  Sets the figure height in inches (e.g., `5` for 5 inches)
+
+- `fig-width: number`  
+  Sets the figure width in inches
+
+- `fig-asp: number`  
+  Sets the aspect ratio (height/width) of the figure (e.g., `0.618` for golden ratio)
+
+- `fig-align: "center"`  
+  Aligns the figure (center, left, or right)
+
+## Table Options
+
+- `tbl-cap: "caption text"`  
+  Adds a caption to the table
+
+- `tbl-cap-location: top/bottom`  
+  Positions the table caption at the top or bottom
+
+- `tbl-colwidths: [width1, width2, ...]`  
+  Specifies relative column widths (e.g., `[80,20]` for 80% and 20%)
+
+## Code Folding
+
+- `code-fold: true/false`  
+  Enables/disables the ability to show/hide code
+
+- `code-summary: "text"`  
+  Custom text to display for the "Show code" button when code is folded
+
+## Chunk Identification
+
+- `label: "chunk-name"`  
+  Names the chunk for cross-referencing (e.g., `fig-` prefix for figures, `tbl-` for tables)
+
+## Common Use Case Examples
+
+### Basic Setup Chunk
+```{r}
+#| label: setup
+#| include: false
+#| message: false
+#| warning: false
+# Your setup code here
+```
+
+### Figure with Caption
+```{r}
+#| label: fig-myplot
+#| fig-cap: "My figure caption"
+#| fig-height: 5
+#| fig-asp: 0.618
+# Your plotting code here
+```
+
+### Table with Caption
+```{r}
+#| label: tbl-mytable
+#| tbl-cap: "My table caption"
+#| tbl-cap-location: top
+#| tbl-colwidths: [70,30]
+# Your table code here
+```
+
+### Interactive Plot with Code Folding
+```{r}
+#| label: fig-interactive
+#| fig-cap: "Interactive plot"
+#| message: false
+#| warning: false
+#| code-fold: true
+#| code-summary: "Show R code to generate the interactive plot below."
+# Your interactive plotting code here
+```
+
+## Best Practices
+
+1. Always use meaningful labels for chunks you want to reference
+2. Use `include: false` for setup chunks that don't need to show output
+3. Be consistent with figure and table numbering (use `fig-` and `tbl-` prefixes)
+4. Use code folding for long code sections to keep the document clean
+5. Set appropriate figure dimensions to ensure good readability
+
+For more detailed information, refer to the [Quarto documentation](https://quarto.org/).
+
